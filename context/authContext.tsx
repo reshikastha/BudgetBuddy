@@ -1,22 +1,47 @@
 import { auth, firestore } from "@/config/firebase";
 import { AuthContextType, UserType } from "@/types";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "expo-router";
+import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { createContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
 
 export const AuthProvider: React.FC<{children : React.ReactNode}> = ({
     children,
 }) =>{
     const [user, setUser] = useState<UserType>(null);
+    const router = useRouter();
 
+    useEffect(()=>{
+        const unsub = onAuthStateChanged(auth, (firebaseUser)=>{
+            if(firebaseUser) {
+                setUser({
+                    uid: firebaseUser?.uid,
+                    email:firebaseUser?.email,
+                    name: firebaseUser?.displayName
+                });
+                updateUserData(firebaseUser.uid);
+                router.replace("/(tabs)");
+            }else{
+                setUser(null);
+                router.replace('/(auth)/welcome');
+            }
+        });
+
+        return()=> unsub()
+    },[]);
+   
     const login = async (email: string, password: string) =>{
         try{
             await signInWithEmailAndPassword(auth, email, password);
             return {success: true};
         }catch(error: any){
             let msg = error.message;
+            console.log("error message:", msg)
+            if(msg.includes("(auth/invalid-credential)")) msg="Wrong Credentails ";
+            if(msg.includes("(auth/invalid-email)")) msg="Invalid Email ";
             return{success:false, msg}
         }
     };
@@ -36,6 +61,7 @@ export const AuthProvider: React.FC<{children : React.ReactNode}> = ({
             return {success: true};
         }catch(error: any){
             let msg = error.message;
+            if(msg.includes("(auth/email-already-in-use)")) msg="The email is already in use";
             return{success:false, msg}
         }
     };
@@ -68,9 +94,19 @@ export const AuthProvider: React.FC<{children : React.ReactNode}> = ({
         updateUserData
     }
     return( 
+        
      <AuthContext.Provider value ={contextValue}>
      {children}
      </AuthContext.Provider>
     )
 
+}
+
+export const useAuth = (): AuthContextType =>{
+    const context = useContext(AuthContext);
+    console.log("AuthContext:", context); 
+    if(!context){
+        throw new Error("useAuth must be wrapper inside AuthProvider")
+    }
+    return context;
 }
