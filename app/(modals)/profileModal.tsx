@@ -34,6 +34,22 @@ const ProfileModal = () => {
     })
   },[user])
 
+  const onPickImage = async () =>{
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+
+
+    if (!result.canceled) {
+      setUserData({...userData, image: result.assets[0].uri});
+    }
+  }
+
   const onSubmit =async ()=>{
     let {name, image} = userData;
     if(!name.trim()) {
