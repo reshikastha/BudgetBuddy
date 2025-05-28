@@ -64,8 +64,8 @@ return (
                         weight='fill'
                         />
                  }/>
-
-
+           
+                <Typo size={14} color={colors.text}>123456</Typo>
                  <Typo size={14} color={colors.text} style={{alignSelf:'flex-end'}}>Forget Password ?</Typo>
 
                  <Button loading={isLoading} onPress={handleSubmit}>

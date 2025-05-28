@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import { colors, radius, spacingX, spacingY } from '@/constants/theme'
@@ -12,10 +12,17 @@ import { getProfileImage } from '@/services/ImageService'
 import { accountOptionType } from '@/types'
 import * as Icons from 'phosphor-react-native'
 import Animated, { FadeIn, FadeInDown }  from 'react-native-reanimated'
+import { signOut } from 'firebase/auth'
+import { auth } from '@/config/firebase'
+import { useRouter } from 'expo-router'
 
 const Profile = () => {
   const {user} = useAuth();
+  const router = useRouter();
 
+  const handleLogout =async()=>{
+    await signOut(auth)
+  }
   const accountOption: accountOptionType[] = [
     {
       title:'Edit Profile',
@@ -62,6 +69,29 @@ const Profile = () => {
       bgColor:'#e11d48'
     }
   ]
+
+  const showLogoutAlert =()=>{
+    Alert.alert("Confirm","Are u sure want to logout?", [
+      {
+        text: "Cancel",
+        onPress:()=> console.log("Cancel"),
+        style: 'cancel'
+      },
+      {
+        text: "Logout",
+        onPress:()=> handleLogout(),
+        style: 'destructive'
+      }
+    ])
+  }
+
+  const handlePress = (item : accountOptionType)=>{
+    if (item.title == 'Logout'){
+      showLogoutAlert();
+    }
+
+    if (item.routeName) router.push(item.routeName);
+  }
   return (
     <ScreenWrapper>
       <View style={styles.container}>
@@ -93,7 +123,7 @@ const Profile = () => {
               <Animated.View 
                 entering={FadeInDown.delay(index*50)}
                 style={styles.listItem}>
-                <TouchableOpacity style={styles.flexRow}>
+                <TouchableOpacity style={styles.flexRow} onPress={() => handlePress(item)}>
                   <View style={[styles.listIcon,{
                     backgroundColor:item?.bgColor
                   }]}>
