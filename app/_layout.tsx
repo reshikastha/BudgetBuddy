@@ -13,6 +13,12 @@ export default function RootLayout(){
             presentation:"modal",
           }}
         />
+          <Stack.Screen
+          name='(modals)/walletModal'
+          options={{
+            presentation:"modal",
+          }}
+        />
       </Stack>
     </AuthProvider>
   );
