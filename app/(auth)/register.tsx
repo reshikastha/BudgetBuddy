@@ -22,7 +22,7 @@ const Register = () => {
     const {register:registerUser} = useAuth();
 
     const handleSubmit=async()=>{
-        if(!emailRef.current || !passwordRef.current|| !nameRef){
+        if(!emailRef.current || !passwordRef.current|| !nameRef.current){
             Alert.alert('Sign up', 'Please fill all the fields')
             return
         }
