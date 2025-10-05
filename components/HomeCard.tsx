@@ -5,8 +5,34 @@ import { colors, spacingX, spacingY } from '@/constants/theme'
 import * as Icons from 'phosphor-react-native';
 import { ImageBackground } from 'expo-image';
 import Typo from './Typo';
+import useFetchData from '@/hooks/useFetchData';
+import { useAuth } from '@/context/authContext';
+import { WalletType } from '@/types';
+import { where,orderBy } from 'firebase/firestore';
 
 const HomeCard = () => {
+
+    const {user} = useAuth()
+    
+   
+    const {
+      data: wallets,
+      error,
+      loading
+    } = useFetchData<WalletType>("wallets",[
+      where("uid", "==", user?.uid),
+      orderBy("created", "desc")
+    ]);
+
+    const getTotals = () =>{
+      return wallets.reduce((totals:any, item:WalletType)=>{
+        totals.balance = totals.balance + Number(item?.amount);
+        totals.income = totals.income + Number(item?.totalIncome);
+        totals.expense = totals.expense + Number(item?.totalExpense);
+        return totals
+
+      },{balance: 0, income:0, expense: 0})
+    }
   return (
   <ImageBackground
   source={require("../assets/images/card.png")}
@@ -24,7 +50,7 @@ const HomeCard = () => {
                     color={colors.black}
                     weight='fill'/>
             </View>
-            <Typo color={colors.black} size={30} fontWeight={"bold"}>$2324.56</Typo>
+            <Typo color={colors.black} size={30} fontWeight={"bold"}>${getTotals()?.balance?.toFixed(2)}</Typo>
         </View>
 
         <View style={styles.status}>
@@ -43,7 +69,7 @@ const HomeCard = () => {
                 </View>
                 <View style={{alignSelf:'center'}}>
                     <Typo size={17} color={colors.primaryLight} fontWeight={"600"}>
-                        $2320
+                       ${getTotals()?.income?.toFixed(2)}
                     </Typo>
                 </View>
 
@@ -64,7 +90,7 @@ const HomeCard = () => {
                 </View>
                 <View style={{alignSelf:'center'}}>
                     <Typo size={17} color={colors.rose} fontWeight={"600"}>
-                        $232
+                       ${getTotals()?.expense?.toFixed(2)}
                     </Typo>
                 </View>
 

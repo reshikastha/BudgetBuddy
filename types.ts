@@ -163,6 +163,7 @@ export type ResponseType = {
 };
 
 export type WalletType = {
+  totalExpense(totalExpense: any): unknown;
   id?: string;
   name: string;
   amount?: number;

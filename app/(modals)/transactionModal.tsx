@@ -6,27 +6,23 @@ import ModalWrapper from '@/components/ModalWrapper';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Header from '@/components/Header';
 import BackButton from '@/components/BackButton';
-import { Image } from 'expo-image';
-import { getProfileImage } from '@/services/ImageService';
 import * as Icons from 'phosphor-react-native';
 import Typo from '@/components/Typo';
 import Input from '@/components/Input';
 import { TransactionType, WalletType } from '@/types';
 import Button from '@/components/Button';
 import { useAuth } from '@/context/authContext';
-import { updateUser } from '@/services/userService';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import * as ImagePicker from 'expo-image-picker'
-  import { Dropdown } from 'react-native-element-dropdown';
-
+import { Dropdown } from 'react-native-element-dropdown';
 import ImageUpload from '@/components/ImageUpload';
 import { createOrUpdateWallet, deleteWallet } from '@/services/walletService';
 import { expenseCategories, transactionTypes } from '@/constants/data';
 import useFetchData from '@/hooks/useFetchData';
 import { orderBy, where } from 'firebase/firestore';
+import { createOrUpdateTransaction } from '@/services/transactionService';
 
 const TransactionModal = () => {
-  const {user, updateUserData} = useAuth();
+  const {user, } = useAuth();
   const [transaction, setTransaction] = useState<TransactionType>({
    type:'expense',
    amount:0,
@@ -74,6 +70,16 @@ const TransactionModal = () => {
     };
 
     console.log("Transaction Date", transactionData)
+
+    setLoading(true);
+    const res = await createOrUpdateTransaction(transactionData);
+
+    setLoading(false);
+    if(res.success){
+      router.back();
+    }else{
+      Alert.alert("Transaction", res.msg);
+    }
   }
 
   const onDelete =async()=>{

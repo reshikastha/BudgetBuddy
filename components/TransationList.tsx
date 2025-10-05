@@ -6,9 +6,10 @@ import { TransactionItemProps, TransactionListType } from '@/types'
 import Typo from './Typo'
 import { FlashList } from '@shopify/flash-list'
 import Loading from './Loading'
-import { expenseCategories } from '@/constants/data'
+import { expenseCategories, incomeCategory } from '@/constants/data'
 
 import Animated, { FadeInDown } from 'react-native-reanimated'
+import { Timestamp } from 'firebase/firestore'
 
 const TransationList = ({
     data,
@@ -29,7 +30,7 @@ const TransationList = ({
         )}
         <View style={styles.list}>
             <FlashList
-                data={[1,2, 3,4,5,6]}
+                data={data}
                 renderItem={({item, index}) => (<TransationItem item={item} index={index} handleClick={handleClick}/>)}
                 estimatedItemSize={60}/>
         </View>
@@ -53,8 +54,15 @@ const TransationList = ({
 }
 
 const TransationItem =({item, index, handleClick}:TransactionItemProps)=>{
-    let category = expenseCategories["rent"];
+    let category = item?.type == "income" ? incomeCategory :expenseCategories[item?.category!];
     const IconComponent = category.icon;
+
+    const date =(item?.date as Timestamp)?.toDate()?.toLocaleDateString("en-GB",
+        {
+            day:"numeric",
+            month:'short'
+        }
+    )
    return(
    <Animated.View entering={FadeInDown.delay(index*200)
     .springify().damping(14)
@@ -70,14 +78,14 @@ const TransationItem =({item, index, handleClick}:TransactionItemProps)=>{
         )}
         </View>
         <View style={styles.categoryDes}>
-            <Typo size={17}>{category.label}</Typo>
+            <Typo size={17}>{category?.label}</Typo>
             <Typo size={12} color={colors.neutral400}
-            textProps={{numberOfLines:1}}>paid rent bill</Typo>
+            textProps={{numberOfLines:1}}>{item?.description}</Typo>
         </View>
 
         <View style={styles.amountDate}>
-            <Typo fontWeight={"500"} color={colors.rose}>-$740</Typo>
-             <Typo size={13} color={colors.neutral400}>12 july</Typo>
+            <Typo fontWeight={"500"} color={item?.type=="income"?colors.primary:colors.rose}>{`${item?.type == "income"? "+ $" :"- $"}${item?.amount}`}</Typo>
+             <Typo size={13} color={colors.neutral400}>{date}</Typo>
         </View>
        </TouchableOpacity>
    </Animated.View>
