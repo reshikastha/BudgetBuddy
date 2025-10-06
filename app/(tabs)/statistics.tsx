@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import { colors, radius, spacingX, spacingY } from '@/constants/theme'
@@ -7,6 +7,9 @@ import Header from '@/components/Header'
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { BarChart, LineChart, PieChart, PopulationPyramid, RadarChart } from "react-native-gifted-charts";
 import { useAuth } from '@/context/authContext'
+import { fetchMonthlyStats, fetchWeeklyStats, fetchYearlyStats } from '@/services/transactionService'
+import Loading from '@/components/Loading'
+import TransationList from '@/components/TransationList'
 
 const barData=[
   {
@@ -85,8 +88,8 @@ const Statistics = () => {
 
   const {user} = useAuth()
   const [activeIndex, setActiveIndex] = useState(0);
-  const [chartData, setChartData] = useState(barData);
-  
+  const [chartData, setChartData] = useState([]);
+  const [transations, setTransactions] = useState([])
   const [chartLoading, setChartLoading] = useState(false);
 
   useEffect(()=>{
@@ -102,13 +105,37 @@ const Statistics = () => {
   },[activeIndex])
 
   const getWeeklyStats = async()=>{
-
+    setChartLoading(true);
+    let res= await fetchWeeklyStats(user?.uid as string);
+    setChartLoading(false);
+    if(res.success) {
+      setChartData(res?.data?.stats);
+      setTransactions(res?.data?.transactions)
+    }else{
+      Alert.alert("Error", res.msg)
+    }
   }
   const getMonthlyStats = async()=>{
-    
+    setChartLoading(true);
+    let res= await fetchMonthlyStats(user?.uid as string);
+    setChartLoading(false);
+    if(res.success) {
+      setChartData(res?.data?.stats);
+      setTransactions(res?.data?.transactions)
+    }else{
+      Alert.alert("Error", res.msg)
+    }
   }
   const getYearlyStats = async()=>{
-    
+      setChartLoading(true);
+    let res= await fetchYearlyStats(user?.uid as string);
+    setChartLoading(false);
+    if(res.success) {
+      setChartData(res?.data?.stats);
+      setTransactions(res?.data?.transactions)
+    }else{
+      Alert.alert("Error", res.msg)
+    }
   }
   return (
     <ScreenWrapper>
@@ -151,20 +178,33 @@ const Statistics = () => {
                   yAxisLabelPrefix='$'
                   yAxisThickness={0}
                   xAxisThickness={0}
-                  yAxisLabelWidth={[1,2].includes(activeIndex)? scale(38): scale(35)}
+                  yAxisLabelWidth={[1,2].includes(activeIndex)? scale(48): scale(45)}
                   yAxisTextStyle={{color:colors.neutral350}}
                   xAxisLabelTextStyle={{
                     color:colors.neutral350,
-                    fontSize:verticalScale(12),
+                    fontSize:verticalScale(13),
                   }}
                   noOfSections={5}
                   minHeight={5}
                   isAnimated={true}
-                  animationDuration={3000}
+                  animationDuration={1000}
                   />
               ):(
                 <View style={styles.noChart}/>
               )}
+              {chartLoading && (
+                <View style={styles.chartLoadingContainer}>
+                  <Loading color={colors.white}/>
+                </View>
+              )}
+            </View>
+
+            <View>
+              <TransationList
+                title='Transactions'
+                emptyListMessage='No Transaction found'
+                data={transations}
+              />
             </View>
         </ScrollView>
       </View>
