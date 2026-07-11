@@ -28,17 +28,17 @@ const welcome = () => {
             {/* footer */}
             <View style={styles.footer}>
                 <View style={{alignItems:'center'}}>
-                    <Typo size={30} fontWeight={"800"}>Always take control</Typo>
-                    <Typo size={30} fontWeight={"800"}> of your finances</Typo>
+                    <Typo size={30} fontWeight={"800"}>Take Charge of</Typo>
+                    <Typo size={30} fontWeight={"800"}>Every Dollor</Typo>
                 </View>
                 <View style={{alignItems:'center', gap:2}}>
-                    <Typo size={15} color={colors.textLight}>Finances must be arranged to set a better</Typo>
-                    <Typo size={15} color={colors.textLight}>lifestyle in futures</Typo>
+                    <Typo size={15} color={colors.textLight}>Create smart budgets, track your spending,</Typo>
+                    <Typo size={15} color={colors.textLight}>and grow your savings with confidence.</Typo>
 
                 </View>
                 <View style={styles.buttonContainer}>
                     <Button onPress={()=> router.push('/(auth)/register')}>
-                        <Typo size={20} color={colors.neutral900} fontWeight={"600"}>Get Started</Typo>
+                        <Typo size={20} color={colors.neutral100} fontWeight={"600"}>Let's Begin</Typo>
                     </Button>
 
                 </View>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         marginRight:spacingX._20
     }, 
     footer:{
-        backgroundColor:colors.neutral900,
+        backgroundColor:colors.neutral600,
         alignItems:'center',
         paddingTop:verticalScale(30),
         paddingBottom:verticalScale(45),

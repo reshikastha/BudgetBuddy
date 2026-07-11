@@ -12,7 +12,7 @@ const ScreenWrapper = ({style, children}: ScreenWrapperProps) => {
         {
             paddingTop,
             flex:1,
-            backgroundColor:colors.neutral900
+            backgroundColor:colors.neutral700
         }
         ,style]}>
             <StatusBar barStyle='light-content' backgroundColor={"black"}/>

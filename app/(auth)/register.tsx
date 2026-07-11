@@ -86,7 +86,7 @@ return (
 
 
                  <Button loading={isLoading} onPress={handleSubmit}>
-                    <Typo fontWeight={"400"} color={colors.black} size={21}>Register</Typo>
+                    <Typo fontWeight={"400"} color={colors.white} size={21}>Register</Typo>
                  </Button>
             </View>
 

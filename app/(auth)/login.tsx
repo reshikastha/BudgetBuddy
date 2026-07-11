@@ -69,7 +69,7 @@ return (
                  <Typo size={14} color={colors.text} style={{alignSelf:'flex-end'}}>Forget Password ?</Typo>
 
                  <Button loading={isLoading} onPress={handleSubmit}>
-                    <Typo fontWeight={"700"} color={colors.black} size={21}>Login</Typo>
+                    <Typo fontWeight={"700"} color={colors.white} size={21}>Login</Typo>
                  </Button>
             </View>
 
